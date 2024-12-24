@@ -18,8 +18,11 @@ import { api } from "@/convex/_generated/api";
 import uuid4 from "uuid4";
 import { useUser } from "@clerk/nextjs";
 import axios from "axios";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
-const UploadPdfDialog = ({ children }) => {
+const UploadPdfDialog = ({ children, isMaxFile }) => {
+  const router = useRouter();
   const { user, isLoaded } = useUser();
   const [file, setFile] = useState();
   const [loading, setLoading] = useState(false);
@@ -91,6 +94,7 @@ const UploadPdfDialog = ({ children }) => {
     let fileUrl;
 
     try {
+      // Initial validation checks
       if (!isLoaded || !user) {
         setError("Please sign in to upload files");
         return;
@@ -116,6 +120,7 @@ const UploadPdfDialog = ({ children }) => {
       setLoading(true);
       setError("");
 
+      // Step 1: Generate upload URL and upload file
       const postUrl = await generateUploadUrl();
 
       const result = await fetch(postUrl, {
@@ -128,10 +133,12 @@ const UploadPdfDialog = ({ children }) => {
         throw new Error("Failed to upload file");
       }
 
+      // Step 2: Get storage ID and file URL
       const { storageId } = await result.json();
       fileUrl = await getFileUrl({ storageId });
-
       fileId = uuid4();
+
+      // Step 3: Add file entry to database
       await addFileEntry({
         fileId,
         storageId,
@@ -140,20 +147,61 @@ const UploadPdfDialog = ({ children }) => {
         fileUrl,
       });
 
+      // Step 4: Process PDF and generate embeddings
+      const Apiresp = await axios.get("/api/pdf-loader?pdfUrl=" + fileUrl);
+      console.log("PDF loader response:", Apiresp.data);
+
+      // Validate and process text chunks
+      let textChunks = [];
+      if (Array.isArray(Apiresp.data.message)) {
+        textChunks = Apiresp.data.message
+          .map((chunk) => (typeof chunk === "string" ? chunk : String(chunk)))
+          .filter((chunk) => chunk && chunk.trim().length > 0);
+      } else {
+        throw new Error("Invalid response format from PDF loader");
+      }
+
+      if (textChunks.length === 0) {
+        throw new Error("No valid text content found in PDF");
+      }
+
+      // Step 5: Generate embeddings
+      const embeddingResponse = await embeddDocument({
+        slitText: textChunks,
+        fileId,
+      });
+
+      console.log("Embedding response:", embeddingResponse);
+
+      if (!embeddingResponse.success) {
+        throw new Error(
+          embeddingResponse.message || "Failed to generate embeddings"
+        );
+      }
+
+      // Step 6: Success handling
+      toast.success("File uploaded successfully!", {
+        description: `${fileName} has been uploaded and processed.`,
+        duration: 3000,
+      });
+
+      // Step 7: Navigation
+      router.push(`/workspace/${fileId}`);
+
+      // Step 8: Reset form
       setFile(null);
       setFileName("");
       setError("");
-    } catch (err) {
-      console.error("Upload error:", err);
-      setError("Failed to upload file. Please try again.");
-    } finally {
-      const Apiresp = await axios.get("/api/pdf-loader?pdfUrl=" + fileUrl);
-      await embeddDocument({
-        slitText: Apiresp.data.message,
-        fileId,
-      });
-      setLoading(false);
       setOpen(false);
+    } catch (err) {
+      console.error("Upload/embedding error:", err);
+      setError(err.message || "Failed to process document. Please try again.");
+      toast.error("Upload failed", {
+        description:
+          "There was an error uploading your file. Please try again.",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -161,7 +209,7 @@ const UploadPdfDialog = ({ children }) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger disabled={isMaxFile} asChild>
         <Button
           onClick={() => setOpen(true)}
           className="w-full bg-gradient-to-r from-gray-900 to-gray-800 hover:from-gray-800 hover:to-gray-700 text-white shadow-lg transition-all duration-200"
