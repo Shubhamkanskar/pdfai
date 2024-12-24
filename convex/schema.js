@@ -5,7 +5,9 @@ export default defineSchema({
     users: defineTable({
         userName: v.string(),
         email: v.string(),
-        imageUrl: v.string()
+        imageUrl: v.string(),
+        upgrade: v.boolean(),
+
     }),
     pdfFiles: defineTable({
         fileId: v.string(),
@@ -20,6 +22,11 @@ export default defineSchema({
         metadata: v.any(),
     }).vectorIndex("byEmbedding", {
         vectorField: "embedding",
-        dimensions: 1536,
+        dimensions: 768,
     }),
+    notes: defineTable({
+        fileId: v.string(),
+        notes: v.string(),
+        createdBy: v.string()
+    })
 });

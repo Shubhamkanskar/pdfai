@@ -1,9 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
+import EditorExtenstion from "./EditorExtenstion";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
-const TextEditor = () => {
+const TextEditor = ({ fileId }) => {
+  const notes = useQuery(api.note.getNotes, {
+    fileId: fileId,
+  });
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -18,18 +25,13 @@ const TextEditor = () => {
       },
     },
   });
+
+  useEffect(() => {
+    editor && editor.commands.setContent(notes);
+  }, [editor && notes]);
   return (
     <>
-      <div className="control-group">
-        <div className="button-group">
-          <button
-            onClick={() => editor.chain().focus().toggleBold().run()}
-            className={editor.isActive("bold") ? "is-active" : ""}
-          >
-            Toggle bold
-          </button>
-        </div>
-      </div>
+      <EditorExtenstion editor={editor} />
       <div>
         <EditorContent editor={editor} />
       </div>

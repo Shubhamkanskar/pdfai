@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 
 export const createUser = mutation({
     args: {
@@ -17,7 +17,8 @@ export const createUser = mutation({
                 await ctx.db.insert('users', {
                     email: args.email,
                     userName: args.userName,
-                    imageUrl: args.imageUrl
+                    imageUrl: args.imageUrl,
+                    upgrade: false
                 });
                 return 'inserted new user';
             }
@@ -26,5 +27,38 @@ export const createUser = mutation({
             console.error('Error in createUser mutation:', error);
             throw new Error('Failed to create user');
         }
+    }
+});
+
+export const userUpgrade = mutation({
+    args: {
+        userEmail: v.string()
+    },
+    handler: async (ctx, args) => {
+        const result = await ctx.db.query('users')
+            .filter(q => q.eq(q.field('email'), args.userEmail))
+            .collect();
+
+        if (result) {
+            const user = result[0];
+            user.upgrade = true;
+            await ctx.db.patch('users', user.id, user);
+            return 'User upgraded successfully';
+        } else {
+            return 'User not found';
+        }
+    }
+});
+
+export const getUserInfo = query({
+    args: {
+        userEmail: v.optional(v.string())
+    },
+    handler: async (ctx, args) => {
+        if (!args.userEmail) { return null }
+        const result = await ctx.db.query('users')
+            .filter(q => q.eq(q.field('email'), args.userEmail))
+            .collect();
+        return result[0];
     }
 });
