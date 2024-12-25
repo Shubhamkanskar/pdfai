@@ -58,7 +58,7 @@ npm run dev
   - Clerk
 
 - **Development Tools**:
-  - TypeScript
+  - Javascript
   - ESLint
   - Prettier
 
