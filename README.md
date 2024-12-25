@@ -99,7 +99,7 @@ This project is licensed under the MIT License .
 ## 📞 Support
 
 - 📧 Email: shubhamkanaskar75@gmail.com
-- <img width="958" alt="Screenshot 2024-12-25 091719" src="https://github.com/user-attachments/assets/0d62901f-caee-4842-a0f0-ccaccfce9c7c" />
+ <img width="958" alt="Screenshot 2024-12-25 091719" src="https://github.com/user-attachments/assets/0d62901f-caee-4842-a0f0-ccaccfce9c7c" />
 
 <img width="962" alt="Screenshot 2024-12-25 091709" src="https://github.com/user-attachments/assets/cd696075-9f15-4284-af37-6cf7488ba70f" />
 
