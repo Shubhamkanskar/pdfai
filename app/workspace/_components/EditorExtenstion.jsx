@@ -10,9 +10,7 @@ import { Editor } from "@tiptap/core";
 import TextAlign from "@tiptap/extension-text-align";
 import Underline from "@tiptap/extension-underline";
 import CodeBlock from "@tiptap/extension-code-block";
-
 import StarterKit from "@tiptap/starter-kit";
-
 import {
   Bold,
   Italic,
@@ -36,10 +34,11 @@ import {
   Image,
   RotateCcw,
   RotateCw,
+  Bot,
 } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 
-// Button Components
+// Button Components with Dark Theme
 const ToolbarButton = ({
   onClick,
   isActive,
@@ -51,9 +50,10 @@ const ToolbarButton = ({
     onClick={onClick}
     disabled={disabled}
     className={`
-      p-2 rounded-md transition-colors
-      ${isActive ? "text-blue-500 bg-blue-50" : "text-zinc-600"}
-      ${disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-zinc-100"}
+      p-2 rounded-lg transition-all duration-200
+      ${isActive ? "bg-purple-500/20 text-purple-400" : "text-gray-400 hover:bg-gray-800/50 hover:text-purple-400"}
+      ${disabled ? "opacity-50 cursor-not-allowed" : "hover:scale-105"}
+      backdrop-blur-sm
     `}
     title={title}
   >
@@ -61,7 +61,7 @@ const ToolbarButton = ({
   </button>
 );
 
-const ToolbarDivider = () => <div className="h-6 w-px bg-zinc-200 mx-2" />;
+const ToolbarDivider = () => <div className="h-6 w-px bg-gray-700/50 mx-2" />;
 
 const AIButton = ({
   onClick,
@@ -73,23 +73,27 @@ const AIButton = ({
     onClick={onClick}
     disabled={isLoading}
     className={`
-      text-zinc-700 hover:text-zinc-200 backdrop-blur-lg
-      bg-gradient-to-tr from-transparent via-[rgba(121,121,121,0.16)] to-transparent
-      rounded-md shadow hover:shadow-zinc-400 duration-700
-      flex items-center gap-2 transition-all
-      ${isLoading ? "cursor-not-allowed" : ""}
-      py-1 px-3 text-sm
+      group
+      text-gray-300 hover:text-purple-400
+      bg-gradient-to-r from-gray-800/50 via-purple-500/10 to-gray-800/50
+      rounded-lg border border-gray-700 hover:border-purple-500/50
+      shadow-lg hover:shadow-purple-500/20
+      backdrop-blur-xl
+      flex items-center gap-2
+      transition-all duration-300
+      ${isLoading ? "cursor-not-allowed" : "hover:scale-105"}
+      py-1.5 px-3 text-sm
       ${floating ? "transform -translate-x-1/2" : ""}
     `}
   >
     {isLoading ? (
-      <Loader2 className="w-2.5 h-2.5 animate-spin" />
+      <Loader2 className="w-4 h-4 animate-spin text-purple-400" />
     ) : (
-      <Sparkle className="w-2.5 h-2.5" />
+      <Bot className="w-4 h-4 group-hover:text-purple-400 transition-colors duration-300" />
     )}
     {!isCompact && (
-      <span className={`font-medium ${isLoading ? "text-zinc-400" : ""}`}>
-        {isLoading ? "Generating..." : "AI"}
+      <span className={`font-medium ${isLoading ? "text-gray-500" : ""}`}>
+        {isLoading ? "Generating..." : "Ask AI"}
       </span>
     )}
   </button>
@@ -118,9 +122,7 @@ const EditorTools = [
       editor?.chain().focus().toggleHeading({ level: 3 }).run(),
     isActive: (editor) => editor?.isActive("heading", { level: 3 }),
   },
-  {
-    type: "divider",
-  },
+  { type: "divider" },
   {
     icon: Bold,
     title: "Bold",
@@ -145,9 +147,7 @@ const EditorTools = [
     action: (editor) => editor?.chain().focus().toggleStrike().run(),
     isActive: (editor) => editor?.isActive("strike"),
   },
-  {
-    type: "divider",
-  },
+  { type: "divider" },
   {
     icon: List,
     title: "Bullet List",
@@ -160,9 +160,7 @@ const EditorTools = [
     action: (editor) => editor?.chain().focus().toggleOrderedList().run(),
     isActive: (editor) => editor?.isActive("orderedList"),
   },
-  {
-    type: "divider",
-  },
+  { type: "divider" },
   {
     icon: AlignLeft,
     title: "Align Left",
@@ -181,9 +179,7 @@ const EditorTools = [
     action: (editor) => editor?.chain().focus().setTextAlign("right").run(),
     isActive: (editor) => editor?.isActive({ textAlign: "right" }),
   },
-  {
-    type: "divider",
-  },
+  { type: "divider" },
   {
     icon: Quote,
     title: "Blockquote",
@@ -196,9 +192,7 @@ const EditorTools = [
     action: (editor) => editor?.chain().focus().toggleCodeBlock().run(),
     isActive: (editor) => editor?.isActive("codeBlock"),
   },
-  {
-    type: "divider",
-  },
+  { type: "divider" },
   {
     icon: RotateCcw,
     title: "Undo",
@@ -219,7 +213,6 @@ const EditorExtension = ({ editor }) => {
   const { fileId } = useParams();
   const { user } = useUser();
   const SearchAI = useAction(api.myActions.search);
-
   const saveNotes = useMutation(api.note.AddNotes);
 
   const [isToolbarLoading, setIsToolbarLoading] = useState(false);
@@ -227,7 +220,6 @@ const EditorExtension = ({ editor }) => {
   const [showFloatingButton, setShowFloatingButton] = useState(false);
   const [buttonPosition, setButtonPosition] = useState({ top: 0, left: 0 });
   const previousQuestions = useRef(new Map());
-  const lastAnswerRef = useRef(null);
 
   useEffect(() => {
     if (!editor) return;
@@ -243,7 +235,7 @@ const EditorExtension = ({ editor }) => {
       const rect = range.getBoundingClientRect();
 
       setButtonPosition({
-        top: rect.top - 30,
+        top: rect.top - 40,
         left: rect.left + rect.width / 2,
       });
       setShowFloatingButton(true);
@@ -269,27 +261,24 @@ const EditorExtension = ({ editor }) => {
   };
 
   const cleanAndFormatAIResponse = (response) => {
-    // Remove backticks if present
     let cleanResponse = response
       .replace(/```[html]?\n?/g, "")
       .replace(/```/g, "");
 
-    // If the response starts with <div class="response">, extract the inner content
     if (cleanResponse.includes('<div class="response">')) {
       cleanResponse = cleanResponse
         .replace(/<div class="response">/g, "")
         .replace(/<\/div>$/g, "");
     }
 
-    // Format the response with proper styling
     return `
-      <div class="ai-answer mt-6 p-6 border border-gray-200 rounded-lg bg-zinc-50/50 backdrop-blur-sm prose max-w-none space-y-6 shadow-sm">
+      <div class="ai-answer mt-6 p-6 rounded-xl border border-gray-700/50 bg-gray-800/30 backdrop-blur-xl prose-invert max-w-none space-y-6 shadow-lg">
         <div class="flex items-center justify-between mb-4">
-          <div class="flex items-center gap-2 text-zinc-600">
-            <span class="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100">
-              <Sparkle class="w-4 h-4 text-blue-500" />
+          <div class="flex items-center gap-2 text-gray-300">
+            <span class="flex h-6 w-6 items-center justify-center rounded-full bg-purple-500/20">
+              <Bot class="w-4 h-4 text-purple-400" />
             </span>
-            <span class="font-medium">Answer</span>
+            <span class="font-medium">AI Response</span>
           </div>
         </div>
         ${cleanResponse}
@@ -299,17 +288,17 @@ const EditorExtension = ({ editor }) => {
 
   const createAnalysisPrompt = (text, content) => {
     return `
-  Analyze the following content and provide a clear response. 
-  
-  Your response should:
-  1. Begin with a clear explanatory paragraph analyzing the content
-  2. Include "Key Points:" section with relevant bullet points
-  3. Use <strong> tags to emphasize important terms
-  4. Be direct without any backticks or code blocks
-  5. Not include any response div wrappers
-  
-  Question: "${text}"
-  Content: "${content}"`;
+    Analyze the following content and provide a clear response. 
+    
+    Your response should:
+    1. Begin with a clear explanatory paragraph analyzing the content
+    2. Include "Key Points:" section with relevant bullet points
+    3. Use <strong> tags to emphasize important terms
+    4. Be direct without any backticks or code blocks
+    5. Not include any response div wrappers
+    
+    Question: "${text}"
+    Content: "${content}"`;
   };
 
   const processAIResponse = async (isFloating = false) => {
@@ -318,7 +307,6 @@ const EditorExtension = ({ editor }) => {
     const setLoading = isFloating ? setIsFloatingLoading : setIsToolbarLoading;
 
     try {
-      // Get selected text
       const selectedText = editor.state.doc
         .textBetween(
           editor.state.selection.from,
@@ -327,7 +315,6 @@ const EditorExtension = ({ editor }) => {
         )
         .trim();
 
-      // Validate selection
       if (!selectedText) {
         toast.error("No text selected", {
           description: "Please select some text to analyze.",
@@ -337,50 +324,34 @@ const EditorExtension = ({ editor }) => {
         return;
       }
 
-      if (selectedText.length < 10) {
-        return;
-      }
+      if (selectedText.length < 10) return;
 
       setLoading(true);
 
-      // Get document content
       const result = await SearchAI({
         query: selectedText,
         fileId: fileId,
       });
 
       const searchResponse = JSON.parse(result);
-      if (!searchResponse.success || !searchResponse.results?.length) {
-        return;
-      }
+      if (!searchResponse.success || !searchResponse.results?.length) return;
 
       const documentContent = searchResponse.results
         .map((item) => item.pageContent)
         .join(" ");
 
-      // Create analysis prompt
       const prompt = createAnalysisPrompt(selectedText, documentContent);
-
-      // Get AI response
       const AIModelResult = await chatSession.sendMessage(prompt);
       let finalAnswer = await AIModelResult.response.text();
 
-      // Clean and format the response
       const formattedAnswer = cleanAndFormatAIResponse(finalAnswer);
 
-      // Check if it's a repeat question
       const questionCount = previousQuestions.current.get(selectedText) || 0;
       previousQuestions.current.set(selectedText, questionCount + 1);
-      const isRepeatQuestion = questionCount > 0;
 
-      if (isRepeatQuestion) {
-      }
-
-      // Add to editor
       const allText = editor.getHTML();
       editor.commands.setContent(allText + formattedAnswer);
 
-      // Save notes
       await saveNotes({
         fileId: fileId,
         notes: editor.getHTML(),
@@ -390,6 +361,10 @@ const EditorExtension = ({ editor }) => {
       scrollToAnswer();
     } catch (error) {
       console.error("Error in AI processing:", error);
+      toast.error("Error processing request", {
+        description:
+          "Please try again or contact support if the problem persists.",
+      });
     } finally {
       setLoading(false);
       if (isFloating) setShowFloatingButton(false);
@@ -400,9 +375,9 @@ const EditorExtension = ({ editor }) => {
     return (
       <div className="p-5 animate-pulse">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-gray-200 rounded"></div>
-          <div className="w-8 h-8 bg-gray-200 rounded"></div>
-          <div className="w-32 h-8 bg-gray-200 rounded-md"></div>
+          <div className="w-8 h-8 bg-gray-800 rounded-lg"></div>
+          <div className="w-8 h-8 bg-gray-800 rounded-lg"></div>
+          <div className="w-32 h-8 bg-gray-800 rounded-lg"></div>
         </div>
       </div>
     );
@@ -410,13 +385,11 @@ const EditorExtension = ({ editor }) => {
 
   return (
     <>
-      {/* Floating Button */}
+      {/* Floating AI Button */}
       {showFloatingButton && (
         <div
           className="fixed z-50 animate-fade-in"
           style={{
-            top: `${buttonPosition.top}px`,
-            left: `${buttonPosition.left}px`,
             top: `${buttonPosition.top}px`,
             left: `${buttonPosition.left}px`,
           }}
@@ -430,8 +403,8 @@ const EditorExtension = ({ editor }) => {
         </div>
       )}
 
-      {/* Top Toolbar */}
-      <div className="sticky top-0 z-40 bg-white border-b">
+      {/* Editor Toolbar */}
+      <div className="sticky top-0 z-40 bg-gray-900/80 border-b border-gray-800 backdrop-blur-xl">
         <div className="p-2">
           <div className="flex items-center gap-1 flex-wrap">
             {EditorTools.map((tool, index) =>
@@ -456,6 +429,140 @@ const EditorExtension = ({ editor }) => {
           </div>
         </div>
       </div>
+
+      {/* Custom Styles for Editor */}
+      <style jsx global>{`
+        .ProseMirror {
+          min-height: calc(100vh - 12rem);
+          color: #e5e7eb;
+          font-size: 1rem;
+          line-height: 1.75;
+          padding: 1rem;
+        }
+
+        .ProseMirror p {
+          margin: 1em 0;
+        }
+
+        .ProseMirror:focus {
+          outline: none;
+        }
+
+        .ProseMirror > * + * {
+          margin-top: 0.75em;
+        }
+
+        .ProseMirror ul,
+        .ProseMirror ol {
+          padding: 0 1rem;
+          color: #d1d5db;
+        }
+
+        .ProseMirror h1,
+        .ProseMirror h2,
+        .ProseMirror h3,
+        .ProseMirror h4,
+        .ProseMirror h5,
+        .ProseMirror h6 {
+          line-height: 1.1;
+          color: #f3f4f6;
+          margin-top: 2rem;
+          margin-bottom: 1rem;
+        }
+
+        .ProseMirror h1 {
+          font-size: 2em;
+          color: #f3f4f6;
+        }
+
+        .ProseMirror h2 {
+          font-size: 1.75em;
+          color: #f3f4f6;
+        }
+
+        .ProseMirror h3 {
+          font-size: 1.5em;
+          color: #f3f4f6;
+        }
+
+        .ProseMirror code {
+          background-color: rgba(139, 92, 246, 0.1);
+          color: #a78bfa;
+          padding: 0.2em 0.4em;
+          border-radius: 0.3em;
+        }
+
+        .ProseMirror pre {
+          background: #1f2937;
+          border-radius: 0.5em;
+          color: #e5e7eb;
+          padding: 0.75em 1em;
+          margin: 1em 0;
+        }
+
+        .ProseMirror blockquote {
+          border-left: 4px solid #8b5cf6;
+          padding-left: 1em;
+          margin-left: 0;
+          font-style: italic;
+          color: #9ca3af;
+        }
+
+        .ProseMirror hr {
+          border: none;
+          border-top: 2px solid #374151;
+          margin: 2em 0;
+        }
+
+        .ProseMirror a {
+          color: #8b5cf6;
+          text-decoration: underline;
+          text-decoration-thickness: 0.1em;
+          transition: all 0.2s ease;
+        }
+
+        .ProseMirror a:hover {
+          color: #a78bfa;
+        }
+
+        .ProseMirror p.is-editor-empty:first-child::before {
+          content: attr(data-placeholder);
+          float: left;
+          color: #6b7280;
+          pointer-events: none;
+          height: 0;
+        }
+
+        .ProseMirror .ai-answer {
+          margin: 1.5rem 0;
+          padding: 1.5rem;
+          background: rgba(17, 24, 39, 0.5);
+          border: 1px solid rgba(139, 92, 246, 0.2);
+          border-radius: 0.75rem;
+          box-shadow:
+            0 4px 6px -1px rgba(0, 0, 0, 0.1),
+            0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .ProseMirror .ai-answer strong {
+          color: #a78bfa;
+        }
+
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-fade-in {
+          animation: fade-in 0.2s ease-out;
+        }
+      `}</style>
     </>
   );
 };
@@ -474,7 +581,7 @@ export const editorConfig = {
   editorProps: {
     attributes: {
       class:
-        "prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none",
+        "prose prose-invert prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none",
     },
   },
 };
