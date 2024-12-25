@@ -8,7 +8,7 @@ import { v } from "convex/values";
 
 // Initialize embeddings configuration
 const getEmbeddings = () => new GoogleGenerativeAIEmbeddings({
-    apiKey: "AIzaSyC7t1jUN_hjg_T6UzoiW2KOOHz6La9LS6w",
+    apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY,
     model: "text-embedding-004",
     taskType: TaskType.RETRIEVAL_DOCUMENT,
     title: "Document title",
@@ -73,7 +73,7 @@ export const search = action({
 
             const vectorStore = new ConvexVectorStore(
                 new GoogleGenerativeAIEmbeddings({
-                    apiKey: "AIzaSyC7t1jUN_hjg_T6UzoiW2KOOHz6La9LS6w",
+                    apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY,
                     model: "text-embedding-004",
                     taskType: TaskType.RETRIEVAL_DOCUMENT,
                     title: "Document title",
