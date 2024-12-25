@@ -1,4 +1,4 @@
-import AnimatedLogo from "@/components/animatedLogo";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
 import { UserButton } from "@clerk/nextjs";
@@ -6,9 +6,9 @@ import Placeholder from "@tiptap/extension-placeholder";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useQuery } from "convex/react";
-import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import { Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
+import AnimatedLogo from "@/components/animatedLogo";
 
 const WorkspaceHeader = ({ fileName, fileId }) => {
   const [isSaving, setIsSaving] = useState(false);
@@ -26,7 +26,7 @@ const WorkspaceHeader = ({ fileName, fileId }) => {
     content: "",
     editorProps: {
       attributes: {
-        class: "focus:outline-none h-screen p-5",
+        class: "focus:outline-none h-screen p-5 text-gray-300",
       },
     },
   });
@@ -40,7 +40,7 @@ const WorkspaceHeader = ({ fileName, fileId }) => {
   const handleSave = async () => {
     if (!editor) return;
 
-    const content = editor.getText(); // Get plain text instead of HTML
+    const content = editor.getText();
     console.log("Content being saved:", content);
 
     if (!content || content.trim() === "") {
@@ -60,7 +60,7 @@ const WorkspaceHeader = ({ fileName, fileId }) => {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `${fileName || "notes"}.txt`; // Save as .txt instead of .docx
+      link.download = `${fileName || "notes"}.txt`;
 
       document.body.appendChild(link);
       link.click();
@@ -77,41 +77,50 @@ const WorkspaceHeader = ({ fileName, fileId }) => {
   };
 
   return (
-    <div className="p-4 flex justify-between items-center shadow-md">
-      <AnimatedLogo />
-      <h2 className="font-bold">{fileName || "Notes"}</h2>
-      <div className="flex gap-2 items-center">
+    <div className="p-4 flex justify-between items-center border-b border-gray-800">
+      <div className="flex items-center gap-2">
+        <div className="transition-transform duration-200 hover:scale-105">
+          <AnimatedLogo />
+        </div>
+      </div>
+
+      <h2 className="font-semibold text-gray-300 bg-gray-800/50 px-4 py-1.5 rounded-full">
+        {fileName || "Notes"}
+      </h2>
+
+      <div className="flex items-center gap-3">
         <Button
           onClick={handleSave}
           disabled={isSaving}
-          className="px-3 py-1 text-sm bg-black hover:bg-gray-800 text-white rounded-lg shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="group bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-full transition-all duration-200 disabled:bg-gray-700 disabled:text-gray-400 flex items-center gap-2"
         >
           {isSaving ? (
-            <span className="flex items-center gap-2">
-              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  fill="none"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
-              </svg>
-              Saving...
-            </span>
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Saving...</span>
+            </>
           ) : (
-            "Save"
+            <>
+              <Save className="h-4 w-4 group-hover:scale-110 transition-transform" />
+              <span>Save Notes</span>
+            </>
           )}
         </Button>
-        <UserButton />
+
+        <div className="hover:scale-105 transition-transform">
+          <UserButton
+            afterSignOutUrl="/"
+            appearance={{
+              elements: {
+                avatarBox: "h-8 w-8",
+              },
+            }}
+          />
+        </div>
       </div>
+
+      {/* Animated Background Line */}
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-25" />
     </div>
   );
 };

@@ -1,9 +1,9 @@
-"use client"
+"use client";
+import React, { useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { useMutation } from "convex/react";
-import { useEffect } from "react";
 import {
   FileText,
   Heart,
@@ -14,7 +14,8 @@ import {
   Twitter,
   ArrowRight,
   MousePointer2,
-  Bot
+  Bot,
+  Sparkles
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -34,7 +35,6 @@ export default function Home() {
       userName: user?.fullName,
       imageUrl: user?.imageUrl
     });
-    console.log(result);
   };
 
   const handleGetStarted = () => {
@@ -46,16 +46,20 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+    <div className="min-h-screen bg-gray-900">
+      {/* Animated Background Elements */}
+      <div className="fixed inset-0 overflow-hidden -z-10">
+        <div className="absolute -top-24 -left-24 w-96 h-96 bg-purple-900/20 rounded-full mix-blend-overlay filter blur-3xl opacity-30 animate-blob" />
+        <div className="absolute top-96 -right-24 w-96 h-96 bg-blue-900/20 rounded-full mix-blend-overlay filter blur-3xl opacity-30 animate-blob animation-delay-2000" />
+        <div className="absolute -bottom-24 left-96 w-96 h-96 bg-pink-900/20 rounded-full mix-blend-overlay filter blur-3xl opacity-30 animate-blob animation-delay-4000" />
+      </div>
+
       {/* Navigation */}
-      <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-xl z-50 border-b border-blue-100">
-        <div className="max-w-7xl mx-auto flex items-center justify-between p-4">
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <div className="absolute inset-0 bg-blue-500 opacity-20 blur rounded-xl" />
-              <FileText className="h-8 w-8 text-blue-600 relative z-10" />
-            </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 text-transparent bg-clip-text">
+      <nav className="fixed top-0 w-full backdrop-blur-lg bg-gray-900/80 z-50 border-b border-gray-800">
+        <div className="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-2 hover:scale-105 transition-transform">
+            <FileText className="h-6 w-6 text-purple-400" />
+            <span className="text-lg font-bold bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">
               PDF AI Chat
             </span>
           </div>
@@ -64,17 +68,17 @@ export default function Home() {
               <div className="flex items-center gap-4">
                 <Button
                   onClick={() => router.push("/dashboard")}
-                  className="bg-gradient-to-r from-blue-600 to-blue-800 text-white hover:opacity-90 transition-all duration-200 shadow-md hover:shadow-xl px-6 py-2 rounded-full font-medium flex items-center gap-2"
+                  className="group bg-purple-500 text-white hover:bg-purple-600 transition-all duration-300 px-4 py-1.5 rounded-full text-sm font-medium flex items-center gap-2"
                 >
-                  Open Dashboard
-                  <ArrowRight className="w-4 h-4" />
+                  Dashboard
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 <UserButton afterSignOutUrl="/" />
               </div>
             ) : (
               <Button
                 onClick={handleGetStarted}
-                className="bg-gradient-to-r from-blue-600 to-blue-800 text-white hover:opacity-90 transition-all duration-200 shadow-md hover:shadow-xl px-6 py-2 rounded-full font-medium"
+                className="bg-purple-500 text-white hover:bg-purple-600 transition-all duration-300 px-4 py-1.5 rounded-full text-sm font-medium"
               >
                 Try For Free
               </Button>
@@ -84,76 +88,64 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <main className="max-w-7xl mx-auto px-4 pt-32 pb-24">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left Column */}
-          <div className="space-y-8">
-            <h1 className="text-5xl lg:text-6xl font-bold">
-              <span className="text-gray-900">Chat with your </span>
-              <span className="bg-gradient-to-r from-blue-600 to-blue-800 text-transparent bg-clip-text">
-                PDF documents
-              </span>
-            </h1>
-            <p className="text-xl text-gray-600 leading-relaxed">
-              Transform how you interact with PDFs. Upload your document and start asking questions instantly. Get accurate answers powered by AI.
-            </p>
-            {!user && (
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button
-                  onClick={handleGetStarted}
-                  className="bg-gradient-to-r from-blue-600 to-blue-800 text-white hover:opacity-90 transition-all duration-200 shadow-lg hover:shadow-xl text-lg px-8 py-6 rounded-full font-medium flex items-center gap-2 justify-center"
-                >
-                  Start Free Trial
-                  <ArrowRight className="w-5 h-5" />
-                </Button>
+      <main className="max-w-5xl mx-auto px-4 pt-24 pb-16">
+        <div className="text-center mb-16">
+          <h1 className="text-4xl font-bold mb-4">
+            <span className="text-white">Chat with your </span>
+            <span className="bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">
+              PDF documents
+            </span>
+          </h1>
+          <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+            Transform how you interact with PDFs. Upload your document and start asking questions instantly. Get accurate answers powered by AI.
+          </p>
+          {!user && (
+            <div className="flex justify-center mt-8">
+              <Button
+                onClick={handleGetStarted}
+                className="group bg-purple-500 text-white hover:bg-purple-600 transition-all duration-300 px-6 py-2 rounded-full text-sm font-medium flex items-center gap-2"
+              >
+                Start Free Trial
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </div>
+          )}
+        </div>
 
+        {/* How it Works */}
+        <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl p-6 border border-gray-700 hover:border-purple-500/50 transition-colors max-w-3xl mx-auto">
+          <h2 className="text-lg font-semibold mb-6 text-white flex items-center gap-2 justify-center">
+            How It Works <Sparkles className="w-4 h-4 text-purple-400" />
+          </h2>
+          <div className="space-y-4">
+            <div className="group flex items-center gap-4 p-4 rounded-xl bg-gray-800/50 border border-gray-700 hover:border-purple-500/50 transition-all duration-300">
+              <div className="bg-gray-700 p-2 rounded-lg group-hover:scale-110 transition-transform">
+                <Upload className="h-4 w-4 text-purple-400" />
               </div>
-            )}
-          </div>
-
-          {/* Right Column - How it Works */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 border border-blue-100">
-            <h2 className="text-2xl font-semibold mb-8 text-gray-900">How It Works</h2>
-            <div className="space-y-6">
-              <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-blue-50 to-white border border-blue-100 hover:shadow-md transition-all duration-200">
-                <div className="bg-blue-100 p-3 rounded-xl">
-                  <Upload className="h-6 w-6 text-blue-600" />
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900">1. Upload Your PDF</p>
-                  <p className="text-gray-600">Just drag & drop or click to upload your document</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-blue-50 to-white border border-blue-100 hover:shadow-md transition-all duration-200">
-                <div className="bg-blue-100 p-3 rounded-xl">
-                  <MousePointer2 className="h-6 w-6 text-blue-600" />
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900">2. Select Text or Write</p>
-                  <p className="text-gray-600">Highlight text or type your question about the PDF</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-blue-50 to-white border border-blue-100 hover:shadow-md transition-all duration-200">
-                <div className="bg-blue-100 p-3 rounded-xl">
-                  <Bot className="h-6 w-6 text-blue-600" />
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900">3. Click AI Button</p>
-                  <p className="text-gray-600">Get instant, accurate answers from your document</p>
-                </div>
+              <div>
+                <p className="font-medium text-white text-sm">1. Upload Your PDF</p>
+                <p className="text-gray-400 text-sm">Just drag & drop or click to upload</p>
               </div>
             </div>
 
-            {/* Demo Preview */}
-            <div className="mt-8 p-4 bg-gray-50 rounded-xl border border-gray-200">
-              <p className="text-sm text-gray-600 font-medium">Example Queries:</p>
-              <ul className="mt-2 space-y-2 text-sm text-gray-500">
-                <li>"Summarize the main points of page 5"</li>
-                <li>"What are the key findings in this research?"</li>
-                <li>"Explain this paragraph in simpler terms"</li>
-              </ul>
+            <div className="group flex items-center gap-4 p-4 rounded-xl bg-gray-800/50 border border-gray-700 hover:border-purple-500/50 transition-all duration-300">
+              <div className="bg-gray-700 p-2 rounded-lg group-hover:scale-110 transition-transform">
+                <MousePointer2 className="h-4 w-4 text-purple-400" />
+              </div>
+              <div>
+                <p className="font-medium text-white text-sm">2. Select Text or Write</p>
+                <p className="text-gray-400 text-sm">Highlight text or type your question</p>
+              </div>
+            </div>
+
+            <div className="group flex items-center gap-4 p-4 rounded-xl bg-gray-800/50 border border-gray-700 hover:border-purple-500/50 transition-all duration-300">
+              <div className="bg-gray-700 p-2 rounded-lg group-hover:scale-110 transition-transform">
+                <Bot className="h-4 w-4 text-purple-400" />
+              </div>
+              <div>
+                <p className="font-medium text-white text-sm">3. Get AI Answers</p>
+                <p className="text-gray-400 text-sm">Receive instant, accurate answers</p>
+              </div>
             </div>
           </div>
         </div>
@@ -161,38 +153,38 @@ export default function Home() {
 
       {/* Features Section */}
       {!user && (
-        <section className="bg-blue-50 py-20">
-          <div className="max-w-7xl mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
+        <section className="py-16">
+          <div className="max-w-5xl mx-auto px-4">
+            <h2 className="text-2xl font-bold text-center mb-8 bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">
               Why Choose PDF AI Chat?
             </h2>
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 gap-6 max-w-3xl mx-auto">
               {[
                 {
                   title: "Instant Answers",
-                  description: "Get immediate responses to any question about your PDF content",
-                  icon: <MessageSquare className="h-6 w-6 text-blue-600" />
+                  description: "Get immediate responses to any question",
+                  icon: <MessageSquare className="h-4 w-4 text-purple-400" />
                 },
                 {
                   title: "Smart Analysis",
-                  description: "AI-powered understanding of complex documents",
-                  icon: <Bot className="h-6 w-6 text-blue-600" />
+                  description: "AI-powered document understanding",
+                  icon: <Bot className="h-4 w-4 text-purple-400" />
                 },
                 {
                   title: "Easy to Use",
-                  description: "No technical skills required - just upload and start asking",
-                  icon: <MousePointer2 className="h-6 w-6 text-blue-600" />
+                  description: "No technical skills required",
+                  icon: <MousePointer2 className="h-4 w-4 text-purple-400" />
                 }
               ].map((feature, index) => (
                 <div
                   key={index}
-                  className="bg-white p-6 rounded-xl shadow-md border border-blue-100 hover:shadow-lg transition-all duration-200"
+                  className="group bg-gray-800/50 backdrop-blur-xl p-6 rounded-xl border border-gray-700 hover:border-purple-500/50 transition-all duration-300"
                 >
-                  <div className="bg-blue-50 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                  <div className="bg-gray-700 w-8 h-8 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     {feature.icon}
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                  <p className="text-gray-600">{feature.description}</p>
+                  <h3 className="text-sm font-semibold mb-2 text-white">{feature.title}</h3>
+                  <p className="text-sm text-gray-400">{feature.description}</p>
                 </div>
               ))}
             </div>
@@ -201,42 +193,63 @@ export default function Home() {
       )}
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-100 py-12">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex flex-col items-center gap-6">
+      <footer className="bg-gray-800/50 backdrop-blur-xl border-t border-gray-800 py-8">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="flex flex-col items-center gap-4">
             <div className="flex items-center gap-2">
-              <FileText className="h-6 w-6 text-blue-600" />
-              <span className="font-bold text-gray-900">PDF AI Chat</span>
+              <FileText className="h-5 w-5 text-purple-400" />
+              <span className="text-sm font-bold bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">
+                PDF AI Chat
+              </span>
             </div>
-            <p className="text-gray-600 flex items-center gap-2">
-              Made with <Heart className="w-5 h-5 text-red-500 fill-red-500" /> by Shubham Kanaskar
+            <p className="text-sm text-gray-400 flex items-center gap-2">
+              Made with <Heart className="w-4 h-4 text-red-400 fill-red-400 hover:scale-125 transition-transform" /> by Shubham Kanaskar
             </p>
-            <div className="flex gap-6">
+            <div className="flex gap-4">
               <Link
                 href="https://github.com/Shubhamkanskar"
                 target="_blank"
-                className="text-gray-400 hover:text-blue-600 transition-colors"
+                className="text-gray-500 hover:text-purple-400 transition-colors hover:scale-125 transition-transform"
               >
-                <Github className="w-6 h-6" />
+                <Github className="w-4 h-4" />
               </Link>
               <Link
                 href="https://www.linkedin.com/in/shubham-kanaskar-237280157/"
                 target="_blank"
-                className="text-gray-400 hover:text-blue-600 transition-colors"
+                className="text-gray-500 hover:text-purple-400 transition-colors hover:scale-125 transition-transform"
               >
-                <Linkedin className="w-6 h-6" />
+                <Linkedin className="w-4 h-4" />
               </Link>
               <Link
                 href="https://x.com/Shubham_kanaska"
                 target="_blank"
-                className="text-gray-400 hover:text-blue-600 transition-colors"
+                className="text-gray-500 hover:text-purple-400 transition-colors hover:scale-125 transition-transform"
               >
-                <Twitter className="w-6 h-6" />
+                <Twitter className="w-4 h-4" />
               </Link>
             </div>
           </div>
         </div>
       </footer>
+
+      {/* Add CSS for animations */}
+      <style jsx global>{`
+        @keyframes blob {
+          0% { transform: translate(0px, 0px) scale(1); }
+          33% { transform: translate(30px, -50px) scale(1.1); }
+          66% { transform: translate(-20px, 20px) scale(0.9); }
+          100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+          animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+          animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+          animation-delay: 4s;
+        }
+      `}</style>
     </div>
   );
 }
