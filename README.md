@@ -1,36 +1,112 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 📄 PDF AI Chat
 
-## Getting Started
+An intelligent PDF document analysis and interaction platform powered by AI.
 
-First, run the development server:
+## ✨ Features
+
+### 🤖 Core AI Capabilities
+- **Smart Document Analysis**: Advanced AI processing of PDF content
+- **Intelligent Q&A**: Get instant, accurate answers about your documents
+- **Content Highlighting**: Precise text highlighting for specific queries
+- **Document Summarization**: Quick overview of lengthy documents
+
+### 🎯 Key Benefits
+- **Time Saving**: Get answers in seconds instead of reading through pages
+- **Enhanced Understanding**: Complex content simplified through AI explanations
+- **Effortless Usage**: No technical skills required
+- **Smart Search**: Find exactly what you need within documents
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+
+- npm or yarn
+- Modern web browser
+
+### Installation
 
 ```bash
+# Clone the repository
+git clone https://github.com/yourusername/pdf-ai-chat.git
+
+# Navigate to project directory
+cd pdf-ai-chat
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
+
+# Start the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Tech Stack
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+- **Frontend**: 
+  - Next.js 14
+  - React
+  - TailwindCSS
+  - Shadcn UI
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Backend**: 
+  - Convex Database
+  - AI Processing Engine
 
-## Learn More
+- **Authentication**: 
+  - Clerk
 
-To learn more about Next.js, take a look at the following resources:
+- **Development Tools**:
+  - TypeScript
+  - ESLint
+  - Prettier
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📱 Usage
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Upload Document** 📤
+   - Drag and drop or click to upload your PDF
+   - Supported format: PDF
 
-## Deploy on Vercel
+2. **Ask Questions** ❓
+   - Type your question in the chat interface
+   - Select specific text to ask targeted questions
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3. **Get Answers** ✅
+   - Receive instant AI-powered responses
+   - View highlighted relevant sections
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 💡 Use Cases
+
+- **Academic Research**: Quickly understand research papers and academic content
+- **Business Analysis**: Extract key information from business documents
+- **Legal Review**: Analyze legal documents and contracts efficiently
+- **Technical Documentation**: Navigate complex technical documentation with ease
+
+## 🔒 Security
+
+- End-to-end encryption for document upload
+- Secure authentication via Clerk
+- Regular security audits
+- GDPR compliant data handling
+
+
+
+## 📄 License
+
+This project is licensed under the MIT License .
+
+## 📞 Support
+
+- 📧 Email: shubhamkanaskar75@gmail.com
+- <img width="958" alt="Screenshot 2024-12-25 091719" src="https://github.com/user-attachments/assets/0d62901f-caee-4842-a0f0-ccaccfce9c7c" />
+
+<img width="962" alt="Screenshot 2024-12-25 091709" src="https://github.com/user-attachments/assets/cd696075-9f15-4284-af37-6cf7488ba70f" />
+
+<img width="956" alt="Screenshot 2024-12-25 091656" src="https://github.com/user-attachments/assets/429fe492-1cf3-4fbf-864d-6e99590ac5c5" />
+
+
+<img width="959" alt="Screenshot 2024-12-25 091648" src="https://github.com/user-attachments/assets/1c332b85-9b30-46df-bfe5-af3bccd27202" />
+
+---
+Built with ❤️ by Shubham Kanaskar
