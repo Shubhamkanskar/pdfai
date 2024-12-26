@@ -3,16 +3,39 @@
 import { ConvexVectorStore } from "@langchain/community/vectorstores/convex";
 import { action } from "./_generated/server.js";
 import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
-import { TaskType } from "@google/generative-ai";
+import { GoogleGenerativeAI, TaskType } from "@google/generative-ai";
 import { v } from "convex/values";
 
-// Initialize embeddings configuration
-const getEmbeddings = () => new GoogleGenerativeAIEmbeddings({
+// Centralized configuration
+const GEMINI_CONFIG = {
     apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY,
-    model: "text-embedding-004",
+    embedModel: "text-embedding-004",
+    chatModel: "gemini-1.5-flash",
+    maxResults: 3,
+};
+
+// Initialize embeddings with proper configuration
+const getEmbeddings = () => new GoogleGenerativeAIEmbeddings({
+    apiKey: GEMINI_CONFIG.apiKey,
+    model: GEMINI_CONFIG.embedModel,
     taskType: TaskType.RETRIEVAL_DOCUMENT,
-    title: "Document title",
+    title: "Document embeddings",
 });
+
+// Initialize chat model with proper configuration
+const getChatModel = () => {
+    const genAI = new GoogleGenerativeAI(GEMINI_CONFIG.apiKey);
+    return genAI.getGenerativeModel({
+        model: GEMINI_CONFIG.chatModel,
+        generationConfig: {
+            temperature: 1,
+            topP: 0.95,
+            topK: 40,
+            maxOutputTokens: 8192,
+            responseMimeType: "text/plain",
+        },
+    });
+};
 
 export const ingest = action({
     args: {
@@ -22,21 +45,30 @@ export const ingest = action({
     handler: async (ctx, args) => {
         try {
             console.log("Starting ingestion for fileId:", args.fileId);
-            console.log("Number of text chunks:", args.slitText.length);
 
-            // Validate and clean the text chunks
+            // Validate and clean text chunks with more robust validation
             const validChunks = args.slitText
-                .filter(chunk => chunk && typeof chunk === 'string' && chunk.trim().length > 0)
+                .filter(chunk => {
+                    const isValid = chunk &&
+                        typeof chunk === 'string' &&
+                        chunk.trim().length > 0;
+                    if (!isValid) {
+                        console.warn("Filtered out invalid chunk:", chunk);
+                    }
+                    return isValid;
+                })
                 .map(chunk => ({
                     pageContent: chunk.trim(),
-                    metadata: { fileId: args.fileId }
+                    metadata: {
+                        fileId: args.fileId,
+                        timestamp: new Date().toISOString()
+                    }
                 }));
 
             if (validChunks.length === 0) {
                 throw new Error("No valid text chunks to process");
             }
 
-            // Initialize vector store with the processed chunks
             const vectorStore = await ConvexVectorStore.fromDocuments(
                 validChunks,
                 getEmbeddings(),
@@ -72,31 +104,42 @@ export const search = action({
             console.log("File ID:", args.fileId);
 
             const vectorStore = new ConvexVectorStore(
-                new GoogleGenerativeAIEmbeddings({
-                    apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY,
-                    model: "text-embedding-004",
-                    taskType: TaskType.RETRIEVAL_DOCUMENT,
-                    title: "Document title",
-                }),
+                getEmbeddings(),
                 { ctx }
             );
 
-            const results = await vectorStore.similaritySearch(args.query, 3);
-            console.log("All search results:", results);
+            // Get relevant documents
+            const results = await vectorStore.similaritySearch(
+                args.query,
+                GEMINI_CONFIG.maxResults
+            );
 
-            // Reconstruct fileId from metadata characters
-            const filteredResults = results.filter((item) => {
-                // Join all the character values in metadata to reconstruct the fileId
-                const reconstructedFileId = Object.values(item.metadata).join('');
-                return reconstructedFileId === args.fileId;
-            });
+            // Filter results by fileId
+            const filteredResults = results.filter(item =>
+                item.metadata?.fileId === args.fileId
+            );
 
             console.log("Filtered results:", filteredResults);
 
+            // Get chat response based on context
+            const chatModel = getChatModel();
+            const chat = chatModel.startChat();
+
+            // Construct context from filtered results
+            const context = filteredResults
+                .map(r => r.pageContent)
+                .join('\n\n');
+
+            // Get AI response with context
+            const response = await chat.sendMessage(
+                `Context:\n${context}\n\nQuestion: ${args.query}`
+            );
+
             return JSON.stringify({
-                success: filteredResults.length > 0,
+                success: true,
                 results: filteredResults,
-                message: filteredResults.length > 0 ? "Documents found" : "No matching documents found"
+                aiResponse: response.text(),
+                message: "Search completed successfully"
             });
 
         } catch (error) {
@@ -104,7 +147,8 @@ export const search = action({
             return JSON.stringify({
                 success: false,
                 message: error.message,
-                results: []
+                results: [],
+                aiResponse: null
             });
         }
     },
