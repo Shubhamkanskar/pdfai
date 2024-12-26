@@ -99,8 +99,12 @@ This project is licensed under the MIT License .
 ## 📞 Support
 
 - 📧 Email: shubhamkanaskar75@gmail.com
+![pdf ai](https://github.com/user-attachments/assets/ad8e7815-dd05-4e47-a837-bc335b4498ba)
+<img width="958" alt="Screenshot 2024-12-26 090952" src="https://github.com/user-attachments/assets/4cdd5ab7-cbef-4874-8e80-e78dc27594e4" />
+<img width="950" alt="Screenshot 2024-12-26 090837" src="https://github.com/user-attachments/assets/b29866d4-6a5d-40f3-9913-b7c719669be4" />
 
 
+<img width="958" alt="Screenshot 2024-12-26 091005" src="https://github.com/user-attachments/assets/9cf9dc14-bfb4-4ab1-826c-a64387bbe4a5" />
 
 ---
 Built with ❤️ by Shubham Kanaskar
