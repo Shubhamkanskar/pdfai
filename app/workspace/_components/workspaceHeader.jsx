@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
 import { UserButton } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -11,7 +12,9 @@ import { toast } from "sonner";
 import AnimatedLogo from "@/components/animatedLogo";
 
 const WorkspaceHeader = ({ fileName, fileId }) => {
+  const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
+
   const notes = useQuery(api.note.getNotes, {
     fileId: fileId,
   });
