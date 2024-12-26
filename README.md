@@ -99,14 +99,15 @@ This project is licensed under the MIT License .
 ## 📞 Support
 
 - 📧 Email: shubhamkanaskar75@gmail.com
- <img width="958" alt="Screenshot 2024-12-25 091719" src="https://github.com/user-attachments/assets/0d62901f-caee-4842-a0f0-ccaccfce9c7c" />
+![pdf ai](https://github.com/user-attachments/assets/c31467a0-91a5-45f9-88fe-4ceee0757940)
+
+<img width="950" alt="Screenshot 2024-12-26 090837" src="https://github.com/user-attachments/assets/b264f796-8426-48b9-b438-d40f6541b74b" />
 
 <img width="962" alt="Screenshot 2024-12-25 091709" src="https://github.com/user-attachments/assets/cd696075-9f15-4284-af37-6cf7488ba70f" />
 
-<img width="956" alt="Screenshot 2024-12-25 091656" src="https://github.com/user-attachments/assets/429fe492-1cf3-4fbf-864d-6e99590ac5c5" />
+<img width="958" alt="Screenshot 2024-12-26 090952" src="https://github.com/user-attachments/assets/5eb486e1-160a-4836-8e8d-55fa6a29f32a" />
+<img width="958" alt="Screenshot 2024-12-26 091005" src="https://github.com/user-attachments/assets/6465cf1f-a050-48e7-b572-017d080d1d66" />
 
-
-<img width="959" alt="Screenshot 2024-12-25 091648" src="https://github.com/user-attachments/assets/1c332b85-9b30-46df-bfe5-af3bccd27202" />
 
 ---
 Built with ❤️ by Shubham Kanaskar
