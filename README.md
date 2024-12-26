@@ -100,12 +100,8 @@ This project is licensed under the MIT License .
 
 - 📧 Email: shubhamkanaskar75@gmail.com
 ![pdf ai](https://github.com/user-attachments/assets/c31467a0-91a5-45f9-88fe-4ceee0757940)
-
 <img width="950" alt="Screenshot 2024-12-26 090837" src="https://github.com/user-attachments/assets/b264f796-8426-48b9-b438-d40f6541b74b" />
-
 <img width="962" alt="Screenshot 2024-12-25 091709" src="https://github.com/user-attachments/assets/cd696075-9f15-4284-af37-6cf7488ba70f" />
-
-<img width="958" alt="Screenshot 2024-12-26 090952" src="https://github.com/user-attachments/assets/5eb486e1-160a-4836-8e8d-55fa6a29f32a" />
 <img width="958" alt="Screenshot 2024-12-26 091005" src="https://github.com/user-attachments/assets/6465cf1f-a050-48e7-b572-017d080d1d66" />
 
 
