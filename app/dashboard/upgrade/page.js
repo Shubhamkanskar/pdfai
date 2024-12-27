@@ -50,6 +50,7 @@ const UpgradePlans = () => {
                 name: "PDF AI",
                 description: "Premium Plan Upgrade",
                 order_id: order.id,
+                prefill: {}, // Removed all prefill data
                 handler: async function (response) {
                     try {
                         const verifyResponse = await fetch('/api/verifyPayment', {
@@ -60,7 +61,7 @@ const UpgradePlans = () => {
                             body: JSON.stringify({
                                 razorpay_payment_id: response.razorpay_payment_id,
                                 razorpay_order_id: response.razorpay_order_id,
-                                razorpay_signature: response.razorpay_signature,
+                                razorpay_signature: response.razorpay_signature
                             }),
                         });
 
@@ -90,9 +91,10 @@ const UpgradePlans = () => {
                         toast.error("Error processing payment");
                     }
                 },
-                prefill: {
-                    name: user?.fullName,
-                    email: userEmail,
+                modal: {
+                    ondismiss: function () {
+                        setIsLoading(false);
+                    }
                 },
                 theme: {
                     color: "#7c3aed"
@@ -120,7 +122,7 @@ const UpgradePlans = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#0a0a0a] text-white py-12 px-4">
+        <div className="min-h-screen bg-[#0f1729] text-white py-12 px-4">
             <div className="max-w-6xl mx-auto">
                 {/* Header Section */}
                 <div className="text-center mb-16">
@@ -135,7 +137,7 @@ const UpgradePlans = () => {
                 {/* Pricing Cards */}
                 <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
                     {/* Free Plan */}
-                    <div className="relative rounded-2xl bg-gray-900 border border-gray-800 p-8 transform transition-all duration-300 hover:-translate-y-1">
+                    <div className="relative rounded-2xl bg-[#1a2234] border border-gray-800 p-8 transform transition-all duration-300 hover:-translate-y-1">
                         <div className="flex justify-between items-start mb-8">
                             <div>
                                 <h3 className="text-2xl font-bold text-white mb-2">Free Plan</h3>
@@ -149,19 +151,19 @@ const UpgradePlans = () => {
 
                         <ul className="space-y-4 mb-8">
                             <li className="flex items-center gap-3">
-                                <div className="p-1.5 rounded-lg bg-gray-800">
+                                <div className="p-1.5 rounded-lg bg-[#243049]">
                                     <Zap className="w-5 h-5 text-purple-400" />
                                 </div>
                                 <span className="text-gray-300">5 PDF uploads</span>
                             </li>
                             <li className="flex items-center gap-3">
-                                <div className="p-1.5 rounded-lg bg-gray-800">
+                                <div className="p-1.5 rounded-lg bg-[#243049]">
                                     <Clock className="w-5 h-5 text-purple-400" />
                                 </div>
                                 <span className="text-gray-300">Standard processing speed</span>
                             </li>
                             <li className="flex items-center gap-3">
-                                <div className="p-1.5 rounded-lg bg-gray-800">
+                                <div className="p-1.5 rounded-lg bg-[#243049]">
                                     <Shield className="w-5 h-5 text-purple-400" />
                                 </div>
                                 <span className="text-gray-300">Basic support</span>
@@ -169,7 +171,7 @@ const UpgradePlans = () => {
                         </ul>
 
                         <button
-                            className="w-full py-3 rounded-xl bg-gray-800 text-gray-300 font-medium cursor-not-allowed"
+                            className="w-full py-3 rounded-xl bg-[#243049] text-gray-300 font-medium cursor-not-allowed"
                             disabled
                         >
                             Current Plan
@@ -177,7 +179,7 @@ const UpgradePlans = () => {
                     </div>
 
                     {/* Premium Plan */}
-                    <div className="relative rounded-2xl bg-gray-900 border border-purple-500/30 p-8 transform transition-all duration-300 hover:-translate-y-1">
+                    <div className="relative rounded-2xl bg-[#1a2234] border border-purple-500/30 p-8 transform transition-all duration-300 hover:-translate-y-1">
                         <div className="absolute -top-2 -right-2 bg-purple-500 text-white px-3 py-1 rounded-lg text-sm font-medium">
                             RECOMMENDED
                         </div>
