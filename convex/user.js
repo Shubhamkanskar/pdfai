@@ -35,17 +35,25 @@ export const userUpgrade = mutation({
         userEmail: v.string()
     },
     handler: async (ctx, args) => {
-        const result = await ctx.db.query('users')
-            .filter(q => q.eq(q.field('email'), args.userEmail))
-            .collect();
+        try {
+            const users = await ctx.db.query('users')
+                .filter(q => q.eq(q.field('email'), args.userEmail))
+                .collect();
 
-        if (result) {
-            const user = result[0];
-            user.upgrade = true;
-            await ctx.db.patch('users', user.id, user);
-            return 'User upgraded successfully';
-        } else {
+            if (users.length > 0) {
+                const user = users[0];
+
+                // Update only the upgrade field
+                await ctx.db.patch(user._id, {
+                    upgrade: true
+                });
+
+                return 'User upgraded successfully';
+            }
             return 'User not found';
+        } catch (error) {
+            console.error('Error in userUpgrade mutation:', error);
+            throw new Error('Failed to upgrade user');
         }
     }
 });
