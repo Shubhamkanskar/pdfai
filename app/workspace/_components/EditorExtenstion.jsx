@@ -38,7 +38,6 @@ import {
 } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 
-// Button Components with Dark Theme
 const ToolbarButton = ({
   onClick,
   isActive,
@@ -99,7 +98,6 @@ const AIButton = ({
   </button>
 );
 
-// Editor Tools Configuration
 const EditorTools = [
   {
     icon: Heading1,
@@ -272,16 +270,17 @@ const EditorExtension = ({ editor }) => {
     }
 
     return `
-      <div class="ai-answer mt-6 p-6 rounded-xl border border-gray-700/50 bg-gray-800/30 backdrop-blur-xl prose-invert max-w-none space-y-6 shadow-lg">
-        <div class="flex items-center justify-between mb-4">
-          <div class="flex items-center gap-2 text-gray-300">
-            <span class="flex h-6 w-6 items-center justify-center rounded-full bg-purple-500/20">
-              <Bot class="w-4 h-4 text-purple-400" />
-            </span>
-            <span class="font-medium">AI Response</span>
+      <div class="ai-answer">
+        <div class="answer-header">
+          <div class="ai-icon">
+            <Bot class="w-4 h-4 text-purple-400" />
           </div>
+          <span class="ai-label">AI Response</span>
         </div>
-        ${cleanResponse}
+        <div class="answer-content">
+          ${cleanResponse}
+        </div>
+        <div class="answer-border"></div>
       </div>
     `;
   };
@@ -385,7 +384,6 @@ const EditorExtension = ({ editor }) => {
 
   return (
     <>
-      {/* Floating AI Button */}
       {showFloatingButton && (
         <div
           className="fixed z-50 animate-fade-in"
@@ -403,7 +401,6 @@ const EditorExtension = ({ editor }) => {
         </div>
       )}
 
-      {/* Editor Toolbar */}
       <div className="sticky top-0 z-40 bg-gray-900/80 border-b border-gray-800 backdrop-blur-xl">
         <div className="p-2">
           <div className="flex items-center gap-1 flex-wrap">
@@ -430,7 +427,6 @@ const EditorExtension = ({ editor }) => {
         </div>
       </div>
 
-      {/* Custom Styles for Editor */}
       <style jsx global>{`
         .ProseMirror {
           min-height: calc(100vh - 12rem);
@@ -534,18 +530,69 @@ const EditorExtension = ({ editor }) => {
         }
 
         .ProseMirror .ai-answer {
-          margin: 1.5rem 0;
+          position: relative;
+          margin: 2rem 0;
           padding: 1.5rem;
-          background: rgba(17, 24, 39, 0.5);
-          border: 1px solid rgba(139, 92, 246, 0.2);
+          background: rgba(17, 24, 39, 0.8);
+          border: 1px solid rgba(139, 92, 246, 0.3);
           border-radius: 0.75rem;
           box-shadow:
             0 4px 6px -1px rgba(0, 0, 0, 0.1),
             0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
-        .ProseMirror .ai-answer strong {
+        .ProseMirror .ai-answer .answer-header {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          margin-bottom: 1rem;
+          padding-bottom: 0.75rem;
+          border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .ProseMirror .ai-answer .ai-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 1.5rem;
+          height: 1.5rem;
+          background: rgba(139, 92, 246, 0.2);
+          border-radius: 50%;
+        }
+
+        .ProseMirror .ai-answer .ai-label {
+          font-weight: 500;
+          color: #e5e7eb;
+        }
+
+        .ProseMirror .ai-answer .answer-content {
+          color: #d1d5db;
+          font-size: 0.95rem;
+          line-height: 1.6;
+        }
+
+        .ProseMirror .ai-answer .answer-content strong {
           color: #a78bfa;
+          font-weight: 600;
+        }
+
+        .ProseMirror .ai-answer .answer-border {
+          position: absolute;
+          bottom: -2rem;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 60%;
+          height: 1px;
+          background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(139, 92, 246, 0.3),
+            transparent
+          );
+        }
+
+        .ProseMirror .ai-answer + .ai-answer {
+          margin-top: 3rem;
         }
 
         @keyframes fade-in {
