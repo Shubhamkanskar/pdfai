@@ -300,6 +300,7 @@ const EditorExtension = ({ editor }) => {
     Content: "${content}"`;
   };
 
+  // Updated processAIResponse to handle the new response format
   const processAIResponse = async (isFloating = false) => {
     if (!editor) return;
 
@@ -327,30 +328,30 @@ const EditorExtension = ({ editor }) => {
 
       setLoading(true);
 
-      const result = await SearchAI({
+      const searchResponse = await SearchAI({
         query: selectedText,
         fileId: fileId,
       });
 
-      const searchResponse = JSON.parse(result);
-      if (!searchResponse.success || !searchResponse.results?.length) return;
+      // Check both success status and results existence
+      if (!searchResponse?.success || !searchResponse?.results?.length) {
+        toast.error("No matching content found", {
+          description: "Please try selecting different text.",
+          duration: 3000,
+        });
+        return;
+      }
 
-      const documentContent = searchResponse.results
-        .map((item) => item.pageContent)
-        .join(" ");
+      // Use the AI response from the search results
+      const formattedAnswer = cleanAndFormatAIResponse(
+        searchResponse.aiResponse
+      );
 
-      const prompt = createAnalysisPrompt(selectedText, documentContent);
-      const AIModelResult = await chatSession.sendMessage(prompt);
-      let finalAnswer = await AIModelResult.response.text();
-
-      const formattedAnswer = cleanAndFormatAIResponse(finalAnswer);
-
-      const questionCount = previousQuestions.current.get(selectedText) || 0;
-      previousQuestions.current.set(selectedText, questionCount + 1);
-
+      // Update editor content
       const allText = editor.getHTML();
       editor.commands.setContent(allText + formattedAnswer);
 
+      // Save notes
       await saveNotes({
         fileId: fileId,
         notes: editor.getHTML(),
@@ -362,7 +363,8 @@ const EditorExtension = ({ editor }) => {
       console.error("Error in AI processing:", error);
       toast.error("Error processing request", {
         description:
-          "Please try again or contact support if the problem persists.",
+          "An error occurred while processing your request. Please try again.",
+        duration: 3000,
       });
     } finally {
       setLoading(false);
