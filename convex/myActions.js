@@ -9,7 +9,7 @@ import { v } from "convex/values";
 // Configuration with more lenient chunk settings
 const GEMINI_CONFIG = {
     embedModel: "embedding-001",
-    chatModel: "gemini-1.5-flash",
+    chatModel: "gemini-2.0-flash",
     maxResults: 1,
     chunkConfig: {
         minChunkSize: 10,     // Reduced minimum size
